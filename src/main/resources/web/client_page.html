@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shop Client Page</title>
+
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.62/pdfmake.min.js" integrity="sha256-wHsYlzQ9EnjIdWOKOlQcOIw4imM+CDwRJ6NhkvJ96iY=" crossorigin="anonymous"></script>-->
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js" integrity="sha256-c3RzsUWg+y2XljunEQS0LqWdQ04X1D3j22fd/8JCAKw=" crossorigin="anonymous"></script>-->
+
+    <script src="/js/jquery-3.1.1.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/css/bootstrap-grid.css">
+    <link rel="stylesheet" href="/css/jumbotron-narrow.css">
+    <link rel="stylesheet" href="/css/daterangepicker.css">
+
+    <style>
+        @font-face {
+            font-family: 'Dosis', sans;
+            font-style: normal;
+            font-weight: normal;
+        }
+
+        body {
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        .modal-body {
+            overflow: scroll;
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .beautyButton {
+            background: white;
+            display:block;
+            border:1px solid black;
+            font-family: 'Dosis', sans;
+            font-weight: normal;
+            color: black;
+            text-transform:uppercase;
+            text-decoration:none;
+            text-align:center;
+            opacity:.8;
+            letter-spacing: 1px;
+            -webkit-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -moz-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -o-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+        }
+
+        .beautyButton:hover {
+            background: black;
+            border:1px solid white;
+            color: white;
+            opacity:1;
+            letter-spacing: 4px;
+            -webkit-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -moz-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -o-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+        }
+
+        .beautyButtonInline {
+            background: white;
+            border:1px solid black;
+            font-family: 'Dosis', sans;
+            font-weight: normal;
+            color: black;
+            text-transform:uppercase;
+            text-decoration:none;
+            text-align:center;
+            opacity:.8;
+            letter-spacing: 1px;
+            -webkit-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -moz-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -o-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+        }
+
+        .beautyButtonInline:hover {
+            background: black;
+            border:1px solid white;
+            color: white;
+            opacity:1;
+            letter-spacing: 4px;
+            -webkit-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -moz-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -o-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+        }
+    </style>
+</head>
+<body>
+<div id="pageHeaderDiv" class="container" style="font-family: 'Dosis', sans; text-transform:uppercase; min-width: 1000px">
+    <div style='position: fixed; right: 0;'>
+        <button id='signOut' type='button' class='beautyButton' style='cursor: pointer;margin-left: 5px;'>
+            sign out
+        </button>
+    </div>
+    <div style='position: fixed; left: 0;'>
+        <p id='role' style='cursor: pointer;margin-right: 5px;'>
+            Client
+        </p>
+    </div>
+    <div>
+        <label for='helloUser' style='font-weight: normal'>
+            <p id='helloUser' style='cursor: pointer;margin-right: 5px;'>
+
+            </p>
+        </label>
+    </div>
+</div>
+<br>
+<hr>
+<div id="pageContentDiv" style="justify-content: space-around; font-family: 'Dosis', sans; min-width: 1000px; margin-left: 50px; margin-right: 50px;">
+    <div id="shopFlow" style="font-weight: normal; min-width: 800px; justify-content: center; display: flex">
+    </div>
+    <div id="currentShopFlow" style="font-weight: normal; min-width: 800px; text-align: center">
+    </div>
+</div>
+</body>
+
+<script src="/js/jsoneditor.min.js"></script>
+<script src="/js/jsonScheme.js"></script>
+<script src="/js/moment.min.js"></script>
+<script src="/js/auth.js"></script>
+
+<script>
+
+    $(function () {
+
+        function showPage() {
+            sendRequest('get', '/client/current_user', null, function (response) {
+                if (response.success) {
+                    $('#helloUser').text("HELLO, " + response.result.username)
+                    initShopFlow()
+                } else {
+                    console.log("Auth failed")
+                }
+            })
+        }
+
+        function initShopFlow() {
+            $('#currentShopFlow').html("")
+            var insertTargetBtn = '<button class="beautyButton shopFlowBtn" shopId="insertTarget">Ввод данных о товаре в БД</button>'
+            $('#shopFlow').append(insertTargetBtn)
+            var showAllTargetsCutBtn = '<button class="beautyButton shopFlowBtn" shopId="showAllTargetsCut">Просмотр всех товаров (краткие данные)</button>'
+            $('#shopFlow').append(showAllTargetsCutBtn)
+            var showTargetBtn = '<button class="beautyButton shopFlowBtn" shopId="showTarget">Просмотр подробной информации о товаре</button>'
+            $('#shopFlow').append(showTargetBtn)
+            var createOrderBtn = '<button class="beautyButton shopFlowBtn" shopId="createOrder">Создание заказа</button>'
+            $('#shopFlow').append(createOrderBtn)
+            var addTargetToOrderBtn = '<button class="beautyButton shopFlowBtn" shopId="addTargetToOrder">Добавление товара в заказ</button>'
+            $('#shopFlow').append(addTargetToOrderBtn)
+            var showOrderBtn = '<button class="beautyButton shopFlowBtn" shopId="showOrder">Просмотр заказа</button>'
+            $('#shopFlow').append(showOrderBtn)
+            var payForOrderBtn = '<button class="beautyButton shopFlowBtn" shopId="payForOrder">Оплата заказа</button>'
+            $('#shopFlow').append(payForOrderBtn)
+
+            $('.shopFlowBtn').on('click', function () {
+                $('#currentShopFlow').html("")
+                switch ($(this).attr("shopId")) {
+                    case 'insertTarget':
+                        $('#currentShopFlow').append('<p>Введите данные для заведения или обновления товара</p>')
+                        $('#currentShopFlow').append(
+                            '<label for="targetName" style="font-weight: normal; min-width: 800px; ">Название:\n' +
+                            '        <input id="targetName" name="targetName" type="text" placeholder="Введите название товара" class="form-control" style="font-size: 14px;">\n' +
+                            '</label><br>' +
+                            ' <label for="targetPrice" style="font-weight: normal; min-width: 800px; ">Цена за единицу товара:\n' +
+                            '        <input id="targetPrice" name="targetPrice" type="text" placeholder="Введите цену за единицу товара:" class="form-control" style="font-size: 14px;">\n' +
+                            '</label><br>' +
+                            ' <label for="targetAmount" style="font-weight: normal; min-width: 800px; ">Количество единиц товара:\n' +
+                            '        <input id="targetAmount" name="targetAmount" type="text" placeholder="Введите количество единиц товара" class="form-control" style="font-size: 14px;">\n' +
+                            '</label><br>' +
+                            ' <label for="targetDescription" style="font-weight: normal; min-width: 800px; ">Описание товара:\n' +
+                            '        <input id="targetDescription" name="targetDescription" type="text" placeholder="Введите описание товара:" class="form-control" style="font-size: 14px;">\n' +
+                            '</label><br>'
+                        )
+                        var okBtn = $('<button>OK</button>')
+                        $('#currentShopFlow').append(okBtn)
+                        okBtn.on('click', function () {
+                            var req = {
+                                "name": $('#targetName').val(),
+                                "price": $('#targetPrice').val(),
+                                "amount": $('#targetAmount').val(),
+                                "description": $('#targetDescription').val()
+                            }
+                            sendRequest('post', '/client/target/insert', JSON.stringify(req), function (response) {
+                                if (response.success) {
+                                    alert("Товар успешно заведен / обновлен")
+                                } else {
+                                    alert("FAIL!")
+                                }
+                            })
+                        })
+                        break
+                    case 'showAllTargetsCut':
+                        $('#currentShopFlow').append('<p>Список всех товаров (краткие данные)</p>')
+                        sendRequest('get', '/client/target/all', null, function (response) {
+                            if (response.success) {
+                                $('#currentShopFlow').append('<pre>'+response.result+'</pre>')
+                            } else {
+                                alert("FAIL!")
+                            }
+                        })
+                        break
+                    case 'showTarget':
+                        $('#currentShopFlow').append('<p>Введите название товара для показа</p>')
+                        $('#currentShopFlow').append(
+                            ' <label for="targetName2Show" style="font-weight: normal; min-width: 800px; ">Название:\n' +
+                            '        <input id="targetName2Show" name="targetName2Show" type="text" placeholder="Введите название товара" class="form-control" style="font-size: 14px;">\n' +
+                            '</label><br>'
+                        )
+                        var okBtn = $('<button>OK</button>')
+                        $('#currentShopFlow').append(okBtn)
+                        okBtn.on('click', function () {
+                            sendRequest('post', '/client/target/get', JSON.stringify({ "name": $('#targetName2Show').val() }), function (response) {
+                                if (response.success) {
+                                    $('#currentShopFlow').append('<pre>'+response.result+'</pre>')
+                                } else {
+                                    alert("FAIL!")
+                                }
+                            })
+                        })
+                        break
+                    case 'createOrder':
+                        $('#currentShopFlow').append('<p>Создание заказа</p>')
+                        sendRequest('post', '/client/order/create', null, function (response) {
+                            if (response.success) {
+                                $('#currentShopFlow').append('<pre>'+response.result+'</pre>')
+                            } else {
+                                alert("FAIL!")
+                            }
+                        })
+                        break
+                    case 'addTargetToOrder':
+                        sendRequest('get', '/client/order/all', null, function (response) {
+                            if (response.success) {
+                                $('#currentShopFlow').append('<br>')
+                                $('#currentShopFlow').append('<pre>'+response.result+'</pre>')
+                                $('#currentShopFlow').append('<p>Выберите номер заказа для добавления товара в него</p>')
+                                $('#currentShopFlow').append(
+                                    ' <label for="orderId" style="font-weight: normal; min-width: 800px; ">Номер заказа:\n' +
+                                    '        <input id="orderId" name="orderId" type="text" placeholder="Введите номер заказа для добавления товара в него" class="form-control" style="font-size: 14px;">\n' +
+                                    '</label><br>'
+                                )
+                                $('#currentShopFlow').append('<p>Введите название товара</p>')
+                                $('#currentShopFlow').append(
+                                    '<label for="targetName" style="font-weight: normal; min-width: 800px; ">Название:\n' +
+                                    '        <input id="targetName" name="targetName" type="text" placeholder="Введите название товара" class="form-control" style="font-size: 14px;">\n' +
+                                    '</label><br>'
+                                )
+                                $('#currentShopFlow').append('<p>Введите число единиц товара для добавления в заказ</p>')
+                                $('#currentShopFlow').append(
+                                    '<label for="targetAmount" style="font-weight: normal; min-width: 800px; ">Число единиц товара:\n' +
+                                    '        <input id="targetAmount" name="targetAmount" type="text" placeholder="Введите название товара" class="form-control" style="font-size: 14px;">\n' +
+                                    '</label><br>'
+                                )
+                                var okBtn = $('<button>OK</button>')
+                                $('#currentShopFlow').append(okBtn)
+                                okBtn.on('click', function () {
+                                    var req = {
+                                        "orderId": $('#orderId').val(),
+                                        "targetName": $('#targetName').val(),
+                                        "targetAmountToBuy": $('#targetAmount').val()
+                                    }
+                                    sendRequest('post', '/client/order/insert', JSON.stringify(req), function (response) {
+                                        if (response.success) {
+                                            alert("Единицы товара были добавлены в заказ")
+                                        } else {
+                                            alert("FAIL!")
+                                        }
+                                    })
+                                })
+                            } else {
+                                alert("FAIL!")
+                            }
+                        })
+                        break
+                    case 'showOrder':
+                        sendRequest('get', '/client/order/all', null, function (response) {
+                            if (response.success) {
+                                $('#currentShopFlow').append('<br>')
+                                $('#currentShopFlow').append('<pre>' + response.result + '</pre>')
+                                $('#currentShopFlow').append('<p>Выберите номер заказа для отображения</p>')
+                                $('#currentShopFlow').append(
+                                    ' <label for="orderId" style="font-weight: normal; min-width: 800px; ">Номер заказа:\n' +
+                                    '        <input id="orderId" name="orderId" type="text" placeholder="Введите номер заказа для отображения" class="form-control" style="font-size: 14px;">\n' +
+                                    '</label><br>'
+                                )
+                                var okBtn = $('<button>OK</button>')
+                                $('#currentShopFlow').append(okBtn)
+                                okBtn.on('click', function () {
+                                    var req = {
+                                        "orderId": $('#orderId').val()
+                                    }
+                                    sendRequest('post', '/client/order/get', JSON.stringify(req), function (response) {
+                                        if (response.success) {
+                                            $('#currentShopFlow').append('<br>')
+                                            $('#currentShopFlow').append('<pre>' + response.result + '</pre>')
+                                        } else {
+                                            alert("FAIL!")
+                                        }
+                                    })
+                                })
+                            } else {
+                                alert("FAIL!")
+                            }
+                        })
+                        break
+                    case 'payForOrder':
+                        sendRequest('get', '/client/order/all', null, function (response) {
+                            if (response.success) {
+                                $('#currentShopFlow').append('<br>')
+                                $('#currentShopFlow').append('<pre>' + response.result + '</pre>')
+                                $('#currentShopFlow').append('<p>Выберите номер заказа для оплаты</p>')
+                                $('#currentShopFlow').append(
+                                    ' <label for="orderId" style="font-weight: normal; min-width: 800px; ">Номер заказа:\n' +
+                                    '        <input id="orderId" name="orderId" type="text" placeholder="Введите номер заказа для отображения" class="form-control" style="font-size: 14px;">\n' +
+                                    '</label><br>'
+                                )
+                                var okBtn = $('<button>OK</button>')
+                                $('#currentShopFlow').append(okBtn)
+                                okBtn.on('click', function () {
+                                    var req = {
+                                        "orderId": $('#orderId').val()
+                                    }
+                                    sendRequest('post', '/client/order/pay', JSON.stringify(req), function (response) {
+                                        if (response.success) {
+                                            $('#currentShopFlow').append('<br>')
+                                            $('#currentShopFlow').append('<pre>' + response.result + '</pre>')
+                                        } else {
+                                            alert("FAIL!")
+                                        }
+                                    })
+                                })
+                            } else {
+                                alert("FAIL!")
+                            }
+                        })
+                        break
+                    default:
+                }
+            })
+        }
+
+        $('#signOut').on("click", function (e) {
+            sendRequest('post', '/auth/signOut', null, function (response) {
+                if (response.success) {
+                    auth()
+                } else {
+                    alert("FAIL!")
+                }
+            })
+        })
+
+        showPage()
+
+
+        // ---------------------------------------------------------------------------------------------------------
+        // Helpers
+        // ---------------------------------------------------------------------------------------------------------
+
+        function isEmpty(obj) {
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key))
+                    return false;
+            }
+            return true;
+        }
+
+        function nonEmpty(obj) {
+            return !isEmpty(obj)
+        }
+
+    });
+</script>
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Company Admin Page</title>
+
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.62/pdfmake.min.js" integrity="sha256-wHsYlzQ9EnjIdWOKOlQcOIw4imM+CDwRJ6NhkvJ96iY=" crossorigin="anonymous"></script>-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js" integrity="sha256-c3RzsUWg+y2XljunEQS0LqWdQ04X1D3j22fd/8JCAKw=" crossorigin="anonymous"></script>-->
+
+    <script src="/js/jquery-3.1.1.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/css/bootstrap-grid.css">
+    <link rel="stylesheet" href="/css/jumbotron-narrow.css">
+    <link rel="stylesheet" href="/css/daterangepicker.css">
+
+    <style>
+        @font-face {
+            font-family: 'Dosis', sans;
+            font-style: normal;
+            font-weight: normal;
+        }
+
+        body {
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        .modal-body {
+            overflow: scroll;
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .beautyButton {
+            background: white;
+            display:block;
+            border:1px solid black;
+            font-family: 'Dosis', sans;
+            font-weight: normal;
+            color: black;
+            text-transform:uppercase;
+            text-decoration:none;
+            text-align:center;
+            opacity:.8;
+            letter-spacing: 1px;
+            -webkit-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -moz-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -o-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+        }
+
+        .beautyButton:hover {
+            background: black;
+            border:1px solid white;
+            color: white;
+            opacity:1;
+            letter-spacing: 4px;
+            -webkit-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -moz-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -o-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+        }
+
+        .beautyButtonInline {
+            background: white;
+            border:1px solid black;
+            font-family: 'Dosis', sans;
+            font-weight: normal;
+            color: black;
+            text-transform:uppercase;
+            text-decoration:none;
+            text-align:center;
+            opacity:.8;
+            letter-spacing: 1px;
+            -webkit-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -moz-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -o-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+        }
+
+        .beautyButtonInline:hover {
+            background: black;
+            border:1px solid white;
+            color: white;
+            opacity:1;
+            letter-spacing: 4px;
+            -webkit-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -moz-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            -o-transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750);
+            transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+        }
+    </style>
+</head>
+<body>
+<div id="pageHeaderDiv" class="container" style="font-family: 'Dosis', sans; text-transform:uppercase; min-width: 1000px">
+    <div style='position: fixed; right: 0;'>
+        <button id='signOut' type='button' class='beautyButton' style='cursor: pointer;margin-left: 5px;'>
+            sign out
+        </button>
+    </div>
+    <div style='position: fixed; left: 0;'>
+        <p id='role' style='cursor: pointer;margin-right: 5px;'>
+            Admin
+        </p>
+    </div>
+    <div>
+        <label for='helloUser' style='font-weight: normal'>
+            <p id='helloUser' style='cursor: pointer;margin-right: 5px;'>
+
+            </p>
+        </label>
+    </div>
+</div>
+<br>
+<hr>
+<div id="pageContentDiv" style="justify-content: space-around; font-family: 'Dosis', sans; min-width: 1000px; margin-left: 50px; margin-right: 50px;">
+    <label for="companyName" style="font-weight: normal; min-width: 800px; ">
+        <input id="companyName" name="companyName" type="text" placeholder="Введите название структурного подразделения" class="form-control" style="font-size: 14px;">
+    </label>
+    <button id='searchCompanyByName' type='button' class='beautyButtonInline' style='cursor: pointer'>
+        Найти
+    </button>
+    <div id="companiesDiv"></div>
+    <br>
+    <label for="lastName" style="font-weight: normal; min-width: 800px; ">
+        <input id="lastName" name="lastName" type="text" placeholder="Введите фамилию" class="form-control" style="font-size: 14px;">
+    </label>
+    <label for="firstName" style="font-weight: normal; min-width: 800px; ">
+        <input id="firstName" name="firstName" type="text" placeholder="Введите имя" class="form-control" style="font-size: 14px;">
+    </label>
+    <label for="middleName" style="font-weight: normal; min-width: 800px; ">
+        <input id="middleName" name="middleName" type="text" placeholder="Введите отчество" class="form-control" style="font-size: 14px;">
+    </label>
+    <label for="passSeries" style="font-weight: normal; min-width: 800px; ">
+        <input id="passSeries" name="passSeries" type="text" placeholder="Введите серию паспорта" class="form-control" style="font-size: 14px;">
+    </label>
+    <label for="passNumber" style="font-weight: normal; min-width: 800px; ">
+        <input id="passNumber" name="passNumber" type="text" placeholder="Введите номер паспорта" class="form-control" style="font-size: 14px;">
+    </label>
+    <label for="snils" style="font-weight: normal; min-width: 800px; ">
+        <input id="snils" name="snils" type="text" placeholder="Введите СНИЛС" class="form-control" style="font-size: 14px;">
+    </label>
+    <button id='searchEmployeesByQuery' type='button' class='beautyButtonInline' style='cursor: pointer'>
+        Найти
+    </button>
+    <div id="employeesDiv"></div>
+
+    <div class="modal fade" id="companyModalDialog" tabindex="-1" role="dialog" aria-hidden="true" style="overflow-y: auto; z-index: 0">
+        <div class="modal-dialog modal-xlg" style="width: 1200px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel"></h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="beautyButtonInline" data-dismiss="modal">Закрыть</button>
+                    <button type="button" id="btnSaveCompany" class="beautyButtonInline">Сохранить изменения</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="employeeModalDialog" tabindex="-1" role="dialog" aria-hidden="true" style="overflow-y: auto; z-index: 0">
+        <div class="modal-dialog modal-xlg" style="width: 1200px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel2"></h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="beautyButtonInline" data-dismiss="modal">Закрыть</button>
+                    <button type="button" id="btnSaveEmployee" class="beautyButtonInline">Сохранить изменения</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id='editor'></div>
+
+</div>
+</body>
+
+<script src="/js/jsoneditor.min.js"></script>
+<script src="/js/jsonScheme.js"></script>
+<script src="/js/moment.min.js"></script>
+<script src="/js/auth.js"></script>
+
+<script>
+
+    $(function () {
+
+        var companies = [];
+        var employees = [];
+
+        function getCompanyById(companyId) {
+            var company = {};
+            for (var k in companies)
+                if (companies[k]._id === companyId)
+                    company = companies[k];
+            return company;
+        }
+        function getEmployeeById(employeeId) {
+            var employee = {}
+            for (var k in employees)
+                if (employees[k]._id === employeeId)
+                    employee = employees[k]
+            return employee
+        }
+
+        function showPage() {
+            sendRequest('get', '/admin/current_user', null, function (response) {
+                if (response.success) {
+                    $('#helloUser').text("HELLO, " + response.result.username)
+                    sendRequest('get', '/admin/company/list', null, listCompanies)
+                    sendRequest('get', '/admin/employee/list', null, listEmployees)
+                } else {
+                    console.log("Auth failed")
+                }
+            })
+        }
+
+        function listCompanies(response) {
+            if (response.success) {
+                $("#companiesDiv").html("")
+
+                var createBtn = $(
+                    "<div style='position: fixed; right: 0;'>\n" +
+                    "        <button  class='beautyButton createCompany' style='cursor: pointer;margin-left: 5px;'>\n" +
+                    "            Создать\n" +
+                    "        </button>\n" +
+                    "    </div>"
+                )
+                $("#companiesDiv").append("<h3>Список структурных подразделений<h3>")
+                $("#companiesDiv").append(createBtn)
+                $("#companiesDiv").append("<br>")
+
+                createBtn.on("click", function (e) {
+                    sendRequest('post', '/admin/company/create', null, function (response) {
+                        if (response.success) {
+                            sendRequest('get', '/admin/company/list', null, listCompanies)
+                            sendRequest('get', '/admin/employee/list', null, listEmployees)
+                        } else {
+                            alert("FAIL!\n" + response.error.description)
+                        }
+                    })
+                })
+
+                companies = response.result
+                companies.forEach(function (company, i, arr) {
+                    var form = $("<div style='font-size: 18px'>" + company.name + " / " + company._id + "</div>")
+                    var editBtn = $('<button class="beautyButtonInline editCompanyBtn" style="margin-left: 5px">Открыть</button>')
+                    var removeBtn = $('<button class="beautyButtonInline removeEmployeeBtn" style="margin-left: 5px">Удалить</button>')
+                    form.append(editBtn)
+                    form.append(removeBtn)
+                    form.append("<hr>")
+                    $("#companiesDiv").append(form)
+
+                    editBtn.on("click", function () {
+                        showCompanyModalDialog(company._id)
+                    })
+
+                    removeBtn.on("click", function () {
+                        companies = companies.filter(function (item) {
+                            return item._id !== company._id
+                        })
+                        sendRequest('post', '/admin/company/remove', JSON.stringify(company), function (response) {
+                            if (response.success) {
+                                sendRequest('get', '/admin/company/list', null, listCompanies)
+                                sendRequest('get', '/admin/employee/list', null, listEmployees)
+                            } else {
+                                alert("FAIL!\n" + response.error.description)
+                            }
+                        })
+                    })
+                })
+            } else {
+                console.log("Error!")
+            }
+        }
+
+        function listEmployees(response) {
+            if (response.success) {
+                $("#employeesDiv").html("")
+
+                var createBtn = $(
+                    "<div style='position: fixed; right: 0;'>\n" +
+                    "        <button  class='beautyButton createEmployee' style='cursor: pointer;margin-left: 5px;'>\n" +
+                    "            Создать\n" +
+                    "        </button>\n" +
+                    "    </div>"
+                )
+                $("#employeesDiv").append("<h3>Список Работников<h3>")
+                $("#employeesDiv").append(createBtn)
+                $("#employeesDiv").append("<br>")
+
+                createBtn.on("click", function (e) {
+                    sendRequest('post', '/admin/employee/create', null, function (response) {
+                        if (response.success) {
+                            sendRequest('get', '/admin/company/list', null, listCompanies)
+                            sendRequest('get', '/admin/employee/list', null, listEmployees)
+                        } else {
+                            alert("FAIL!\n" + response.error.description)
+                        }
+                    })
+                })
+
+                employees = response.result
+                employees.forEach(function (employee, i, arr) {
+                    var form = $("<div style='font-size: 18px'>" + employee.firstName + " / " + employee.lastName + " / " + employee._id + "</div>")
+                    var editBtn = $('<button class="beautyButtonInline editEmployeeBtn" style="margin-left: 5px">Открыть</button>')
+                    var removeBtn = $('<button class="beautyButtonInline removeEmployeeBtn" style="margin-left: 5px">Удалить</button>')
+                    form.append(editBtn)
+                    form.append(removeBtn)
+                    form.append("<hr>")
+                    $("#employeesDiv").append(form)
+
+                    editBtn.on("click", function () {
+                        showEmployeeModalDialog(employee._id)
+                    })
+
+                    removeBtn.on("click", function () {
+                        employees = employees.filter(function (item) {
+                            return item._id !== employee._id
+                        })
+                        sendRequest('post', '/admin/employee/remove', JSON.stringify(employee), function (response) {
+                            if (response.success) {
+                                sendRequest('get', '/admin/company/list', null, listCompanies)
+                                sendRequest('get', '/admin/employee/list', null, listEmployees)
+                            } else {
+                                alert("FAIL!\n" + response.error.description)
+                            }
+                        })
+                    })
+                })
+            } else {
+                console.log("Error!")
+            }
+        }
+
+        function showCompanyModalDialog(companyId) {
+            var company = getCompanyById(companyId)
+
+            $("#companyModalDialog .modal-title").text("Подразделение организации: " + company.name)
+
+            var form = $("<div>")
+            var blockEditor = $("<div id='companyBlockEditor'>")
+            form.append(blockEditor)
+            $("#companyModalDialog .modal-body").html("")
+            $("#companyModalDialog .modal-body").append(form)
+            $('#companyModalDialog').modal('show')
+
+            var editor = new JSONEditor(
+                document.getElementById('companyBlockEditor'),
+                {
+                    schema: structuralUnitSchema,
+                    theme: 'bootstrap3',
+                    iconlib: "bootstrap3",
+                    startval: company
+                }
+            );
+            editor.enable()
+            company.staffTables.forEach(function (staffTable, i, arr1) {
+                staffTable.staff.forEach(function (staff, j, arr2) {
+                    editor.getEditor("root.staffTables." + i + ".staff." + j + ".stakeRates").disable()
+                    var id = editor.getEditor("root.staffTables." + i + ".staff." + j + "._id").getValue()
+                    console.log(id)
+                })
+            })
+            // editor.getEditor("root.name").destroy()
+            // editor.getEditor("root._id").destroy()
+
+            $("#btnSaveCompany").unbind( "click" );
+            $("#btnSaveCompany").on("click", function() {
+                var company4save = JSON.parse(JSON.stringify(editor.getValue()))
+
+                for (var kk in companies) {
+                    if (companies[kk]._id === company4save._id)
+                        companies[kk] = company4save;
+                }
+
+                sendRequest('post', '/admin/company/update', JSON.stringify(company4save), function(response) {
+                    if (response.success) {
+                        alert("OK!")
+                    } else {
+                        alert("FAIL!\n" + response.error.description)
+                    }
+                });
+
+            })
+        }
+
+        function showEmployeeModalDialog(employeeId) {
+            var employee = getEmployeeById(employeeId)
+
+            $("#employeeModalDialog .modal-title").text("Работник: " + employee.firstName + " " + employee.lastName)
+
+            var form = $("<div>")
+            var blockEditor = $("<div id='employeeBlockEditor'>")
+            form.append(blockEditor)
+            $("#employeeModalDialog .modal-body").html("")
+            $("#employeeModalDialog .modal-body").append(form)
+            $('#employeeModalDialog').modal('show')
+
+            var editor = new JSONEditor(
+                document.getElementById('employeeBlockEditor'),
+                {
+                    schema: employeeSchema,
+                    theme: 'bootstrap3',
+                    iconlib: "bootstrap3",
+                    startval: employee
+                }
+            );
+            editor.enable()
+
+            $("#btnSaveEmployee").unbind( "click" );
+            $("#btnSaveEmployee").on("click", function() {
+                var employee4save = JSON.parse(JSON.stringify(editor.getValue()))
+
+                for (var kk in employees) {
+                    if (employees[kk]._id === employee4save._id)
+                        employees[kk] = employee4save;
+                }
+
+                sendRequest('post', '/admin/employee/update', JSON.stringify(employee4save), function(response) {
+                    if (response.success) {
+                        alert("OK!")
+                    } else {
+                        alert("FAIL!\n" + response.error.description)
+                    }
+                });
+
+            })
+        }
+
+        $('#searchCompanyByName').on("click", function (e) {
+            var req = {
+                "companyName": $("#companyName").val()
+            }
+            sendRequest('post', '/admin/company/find_by_name', JSON.stringify(req), listCompanies)
+            sendRequest('post', '/admin/employee/find_by_company', JSON.stringify(req), listEmployees)
+        })
+
+        $('#searchEmployeesByQuery').on("click", function (e) {
+            var req = {}
+            if (nonEmpty($("#lastName").val())) req["lastName"] = $("#lastName").val()
+            if (nonEmpty($("#firstName").val())) req["firstName"] = $("#firstName").val()
+            if (nonEmpty($("#middleName").val())) req["middleName"] = $("#middleName").val()
+            if (nonEmpty($("#passSeries").val())) req["passSeries"] = $("#passSeries").val()
+            if (nonEmpty($("#passNumber").val())) req["passNumber"] = $("#passNumber").val()
+            if (nonEmpty($("#snils").val())) req["snils"] = $("#snils").val()
+
+            sendRequest('post', '/admin/company/find_by_employee', JSON.stringify(req), listCompanies)
+            sendRequest('post', '/admin/employee/find_by_query', JSON.stringify(req), listEmployees)
+        })
+
+        $('#signOut').on("click", function (e) {
+            sendRequest('post', '/auth/signOut', null, function (response) {
+                if (response.success) {
+                    auth()
+                } else {
+                    alert("FAAIL!")
+                }
+            })
+        })
+
+        showPage()
+
+
+        // ---------------------------------------------------------------------------------------------------------
+        // Helpers
+        // ---------------------------------------------------------------------------------------------------------
+
+        function isEmpty(obj) {
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key))
+                    return false;
+            }
+            return true;
+        }
+
+        function nonEmpty(obj) {
+            return !isEmpty(obj)
+        }
+
+    });
+</script>
+</html>
