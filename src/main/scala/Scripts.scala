@@ -10,7 +10,7 @@ import org.apache.poi.xwpf.usermodel.{IBody, IBodyElement, IRunBody, XWPFDocumen
 import org.apache.xmlbeans.impl.soap.Node
 import org.apache.xmlbeans.{SchemaType, XmlCursor, XmlObject, XmlOptions}
 import org.openxmlformats.schemas.drawingml.x2006.main.CTTable
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.{CTBody, CTR, CTTbl}
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.{CTBody, CTR, CTString, CTTbl, CTTblPr}
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.io.{ByteArrayOutputStream, FileInputStream, InputStream}
@@ -234,6 +234,7 @@ object DocxUpdaterScript {
         }
 
         def replaceKeysInParagraphHandler(cursor: XmlCursor, paragraph: XWPFParagraph, params: Map[String, Any]): Unit = {
+//            val cur = cursor.newCursor()
             val objects = getObjectsFromCursor(cursor)
 
             //            var i = 0
@@ -279,28 +280,41 @@ object DocxUpdaterScript {
 
                         // TODO: заменить параграф на отдельные параграфы
 
-
-                        val ctTable = CTTbl.Factory.newInstance()
-                        val table = new XWPFTable(ctTable, doc)
-                        table.createRow().createCell().setText("Sosi2")
-                        paragraph.getBody.insertTable(1, table)
-                        obj.set(table.getCTTbl)
+                        val table = paragraph.getBody.insertNewTbl(paragraph.getCTP.newCursor())
+                        table.createRow().createCell().setText("Hello I'm Table in any place")
 
 
-                        //                        val cursor2 = paragraph.getCTP.newCursor
-                        //                        val nestedTable = paragraph.getBody.insertNewTbl(cur)
-                        //                        val rowOfNestedTable = nestedTable.getRow(0).getCell(0).setText("Sosi")
 
+                        val x: XmlObject = table.getCTTbl().getTblPr().asInstanceOf[XmlObject]
 
-                        //                        val cursor = paragraph.getCTP.newCursor
-                        //                        val nestedTable = paragraph.getBody.insertNewTbl(cursor)
-                        //                        val rowOfNestedTable = nestedTable.createRow
-                        //                        val cellOfNestedTable = rowOfNestedTable.createCell
-                        //                        cellOfNestedTable.setText("Cell 0,0")
+                        var c: XmlCursor = x.newCursor()  // Create a cursor at the element
+                        c.toNextToken()              // Move cursor after the tblPr tag
+                        c.insertElement("tblpPr", "http://schemas.openxmlformats.org/wordprocessingml/2006/main")
+                        c.toPrevSibling() //Now go to the tblpPr
+                        val x2 = c.getObject() //Get the tblpPr object
+                        c.dispose()
+                        c = x2.newCursor() //Now our cursor is inside the second tblpPr
+                        c.toNextToken()
+                        c.insertAttributeWithValue("tblpX", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "5000")
+                        c.insertAttributeWithValue("tblpY", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "-400")
+                        c.insertAttributeWithValue("leftFromText", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "180")
+                        c.insertAttributeWithValue("rightFromText", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "180")
+                        c.insertAttributeWithValue("vertAnchor", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "text")
+                        c.insertAttributeWithValue("horzAnchor", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "page")
+                        c.insertAttributeWithValue("tblOverlap", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "never")
+                        c.dispose()
 
+                        var c2: XmlCursor = x.newCursor()  // Create a cursor at the element
+                        c2.toNextToken()              // Move cursor after the tblPr tag
+                        c2.insertElement("tblOverlap", "http://schemas.openxmlformats.org/wordprocessingml/2006/main")
+                        c2.toPrevSibling() //Now go to the tblOverlap
+                        val x3 = c2.getObject() //Get the tblOverlap object
+                        c2.dispose()
+                        c2 = x3.newCursor() //Now our cursor is inside the second tblpPr
+                        c2.toNextToken()
+                        c2.insertAttributeWithValue("val", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "never")
+                        c2.dispose()
 
-                        //                        run.setText(paramFullyFoundInText.foldLeft(mergedText + text)((txt, p) => txt.replace(p._1, p._2.toString)), 0)
-                        //                        obj.set(run.getCTR)
                         (List(), "")
                     } else {
                         val paramsPossible = params.collect { case p if p._1.contains(mergedText + text) => p }
