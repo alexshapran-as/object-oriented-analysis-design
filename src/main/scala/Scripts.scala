@@ -243,12 +243,7 @@ object DocxUpdaterScript {
 
         def replaceKeysInParagraphHandler(cursor: XmlCursor, paragraph: XWPFParagraph, params: Map[String, Any], mapParams: Map[String, Any]): Unit = {
             val objects = getObjectsFromCursor(cursor)
-            val objectsWithTextChunks = objects.map { obj =>
-                val ctr = CTR.Factory.parse(obj.xmlText)
-                val run = new XWPFRun(ctr, paragraph.asInstanceOf[IRunBody])
-                val textChunk = run.toString
-                (obj, textChunk)
-            }
+            val objectsWithTextChunks = zipObjectsWitTextChunks(objects, paragraph)
             val paragraphText = objectsWithTextChunks.map(_._2).mkString
             if (
                 objectsWithTextChunks.nonEmpty &&
@@ -260,15 +255,6 @@ object DocxUpdaterScript {
                         val words = text.split(' ').toList
                         // TODO: учитывать пунктуацию при токенизации?
                         tokensAcc ++ words.map((_, obj))
-                }
-
-                @tailrec
-                def initsForEach(
-                                    tokensObjs: List[(String, XmlObject)],
-                                    tokensObjsInitsForEach: List[List[(String, XmlObject)]] = List.empty
-                                ):  List[List[(String, XmlObject)]] = {
-                    if (tokensObjs.isEmpty) tokensObjsInitsForEach
-                    else initsForEach(tokensObjs.tail, tokensObjsInitsForEach ++ tokensObjs.inits.toList.filter(_.nonEmpty))
                 }
 
                 // оставляем только те токены, которые являются частями параметров
@@ -303,43 +289,49 @@ object DocxUpdaterScript {
                                 replaceSettings.getOrElse("type", sys.error("type not defined")).toString match {
                                     case "table" =>
                                         val table = paragraph.getBody.insertNewTbl(paragraph.getCTP.newCursor())
-                                        val collsText = if (replaceSettings("split").toString == "chars") paramValue.toCharArray else Array.empty[Char]
-                                        collsText.foreach { c =>
-                                            table.getRow(0).addNewTableCell().setText(c.toString)
+                                        replaceSettings("split").toString match {
+                                            case "chars" =>
+                                                val collsText = paramValue.toCharArray.map(_.toString)
+                                                table.getRow(0).getCell(0).setText(collsText.head)
+                                                collsText.tail.foreach { c =>
+                                                    table.getRow(0).addNewTableCell().setText(c)
+                                                }
+
+                                                val tableProperties: XmlObject = table.getCTTbl.getTblPr.asInstanceOf[XmlObject]
+                                                var tablePosPropsCursor: XmlCursor = tableProperties.newCursor() // Create a cursor at the element
+                                                tablePosPropsCursor.toNextToken // Move cursor after the tblPr tag
+
+                                                tablePosPropsCursor.insertElement("tblpPr", "http://schemas.openxmlformats.org/wordprocessingml/2006/main")
+                                                tablePosPropsCursor.toPrevSibling // Now go to the tblpPr
+                                                val posProps = tablePosPropsCursor.getObject // Get the tblpPr object
+                                                tablePosPropsCursor.dispose()
+                                                tablePosPropsCursor = posProps.newCursor() // Now our cursor is inside the second tblpPr
+                                                tablePosPropsCursor.toNextToken
+                                                tablePosPropsCursor.insertAttributeWithValue("tblpX", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", replaceSettings("pos").asInstanceOf[Map[String, String]]("x"))
+                                                tablePosPropsCursor.insertAttributeWithValue("tblpY", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", replaceSettings("pos").asInstanceOf[Map[String, String]]("y"))
+                                                tablePosPropsCursor.insertAttributeWithValue("leftFromText", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "30")
+                                                tablePosPropsCursor.insertAttributeWithValue("rightFromText", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "30")
+                                                tablePosPropsCursor.insertAttributeWithValue("vertAnchor", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "text")
+                                                tablePosPropsCursor.insertAttributeWithValue("horzAnchor", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "page")
+                                                tablePosPropsCursor.insertAttributeWithValue("tblOverlap", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "never")
+                                                tablePosPropsCursor.dispose()
+
+                                                var tableOverlapPropsCursor: XmlCursor = tableProperties.newCursor() // Create a cursor at the element
+                                                tableOverlapPropsCursor.toNextToken // Move cursor after the tblPr tag
+                                                tableOverlapPropsCursor.insertElement("tblOverlap", "http://schemas.openxmlformats.org/wordprocessingml/2006/main")
+                                                tableOverlapPropsCursor.toPrevSibling // Now go to the tblOverlap
+                                                val overlapProps = tableOverlapPropsCursor.getObject // Get the tblOverlap object
+                                                tableOverlapPropsCursor.dispose()
+                                                tableOverlapPropsCursor = overlapProps.newCursor() //Now our cursor is inside the second tblpPr
+                                                tableOverlapPropsCursor.toNextToken
+                                                tableOverlapPropsCursor.insertAttributeWithValue("val", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "never")
+                                                tableOverlapPropsCursor.dispose()
+
+                                                runs.last.setText(mergedText.replaceAll(param, ""), 0)
+                                                objs.last.set(runs.last.getCTR)
+
+                                            case _ =>
                                         }
-
-                                        val tableProperties: XmlObject = table.getCTTbl.getTblPr.asInstanceOf[XmlObject]
-                                        var tablePosPropsCursor: XmlCursor = tableProperties.newCursor() // Create a cursor at the element
-                                        tablePosPropsCursor.toNextToken // Move cursor after the tblPr tag
-
-                                        tablePosPropsCursor.insertElement("tblpPr", "http://schemas.openxmlformats.org/wordprocessingml/2006/main")
-                                        tablePosPropsCursor.toPrevSibling // Now go to the tblpPr
-                                        val posProps = tablePosPropsCursor.getObject // Get the tblpPr object
-                                        tablePosPropsCursor.dispose()
-                                        tablePosPropsCursor = posProps.newCursor() // Now our cursor is inside the second tblpPr
-                                        tablePosPropsCursor.toNextToken
-                                        tablePosPropsCursor.insertAttributeWithValue("tblpX", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", replaceSettings("pos").asInstanceOf[Map[String, String]]("x"))
-                                        tablePosPropsCursor.insertAttributeWithValue("tblpY", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", replaceSettings("pos").asInstanceOf[Map[String, String]]("y"))
-                                        tablePosPropsCursor.insertAttributeWithValue("leftFromText", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "30")
-                                        tablePosPropsCursor.insertAttributeWithValue("rightFromText", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "30")
-                                        tablePosPropsCursor.insertAttributeWithValue("vertAnchor", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "text")
-                                        tablePosPropsCursor.insertAttributeWithValue("horzAnchor", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "page")
-                                        tablePosPropsCursor.insertAttributeWithValue("tblOverlap", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "never")
-                                        tablePosPropsCursor.dispose()
-
-                                        var tableOverlapPropsCursor: XmlCursor = tableProperties.newCursor() // Create a cursor at the element
-                                        tableOverlapPropsCursor.toNextToken // Move cursor after the tblPr tag
-                                        tableOverlapPropsCursor.insertElement("tblOverlap", "http://schemas.openxmlformats.org/wordprocessingml/2006/main")
-                                        tableOverlapPropsCursor.toPrevSibling // Now go to the tblOverlap
-                                        val overlapProps = tableOverlapPropsCursor.getObject // Get the tblOverlap object
-                                        tableOverlapPropsCursor.dispose()
-                                        tableOverlapPropsCursor = overlapProps.newCursor() //Now our cursor is inside the second tblpPr
-                                        tableOverlapPropsCursor.toNextToken
-                                        tableOverlapPropsCursor.insertAttributeWithValue("val", "http://schemas.openxmlformats.org/wordprocessingml/2006/main", "never")
-                                        tableOverlapPropsCursor.dispose()
-
-                                        runs.last.setText(mergedText.replaceAll(param, ""), 0)
-                                        objs.last.set(runs.last.getCTR)
 
                                     case _ =>
                                 }
@@ -348,13 +340,33 @@ object DocxUpdaterScript {
             }
         }
 
-        def getObjectsFromCursor(cursor: XmlCursor): List[XmlObject] = {
+        // Utils
+
+        private def getObjectsFromCursor(cursor: XmlCursor): List[XmlObject] = {
             var objects = List.empty[XmlObject]
             while (cursor.hasNextSelection) {
                 cursor.toNextSelection
                 objects = objects :+ cursor.getObject
             }
             objects
+        }
+
+        private def zipObjectsWitTextChunks(objects: List[XmlObject], paragraph: XWPFParagraph): List[(XmlObject, String)] = {
+            objects.map { obj =>
+                val ctr = CTR.Factory.parse(obj.xmlText)
+                val run = new XWPFRun(ctr, paragraph.asInstanceOf[IRunBody])
+                val textChunk = run.toString
+                (obj, textChunk)
+            }
+        }
+
+        @tailrec
+        private def initsForEach(
+                                    tokensObjs: List[(String, XmlObject)],
+                                    tokensObjsInitsForEach: List[List[(String, XmlObject)]] = List.empty
+                                ): List[List[(String, XmlObject)]] = {
+            if (tokensObjs.isEmpty) tokensObjsInitsForEach
+            else initsForEach(tokensObjs.tail, tokensObjsInitsForEach ++ tokensObjs.inits.toList.filter(_.nonEmpty))
         }
     }
 }
